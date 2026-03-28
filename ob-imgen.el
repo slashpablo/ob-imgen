@@ -58,7 +58,7 @@
   :group 'org-babel
   :prefix "ob-imgen-")
 
-(defcustom ob-imgen-default-model "gpt-image-1"
+(defcustom ob-imgen-default-model "gpt-image-1.5"
   "Default image generation model."
   :type 'string
   :group 'ob-imgen)

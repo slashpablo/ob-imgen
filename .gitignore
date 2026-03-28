@@ -1,4 +1,7 @@
-
-# Dolt database files (added by bd init)
+.beads/
+.claude/
+.gc/
+.runtime/
 .dolt/
 *.db
+worktrees/

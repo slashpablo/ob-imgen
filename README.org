@@ -11,9 +11,9 @@ A red fox sitting on a snowy mountain at sunset
 
 * Features
 
-- Works with OpenAI models: =dall-e-2=, =dall-e-3=, =gpt-image-1=
+- Works with OpenAI =gpt-image= models
 - Images display inline automatically after generation
-- Configurable output directory, quality, size, and style
+- Configurable output directory, quality, and size
 - API key via environment variable or custom function (e.g. auth-source)
 
 * Installation
@@ -57,23 +57,23 @@ Or customize the key retrieval function:
 Optional settings:
 
 #+begin_src emacs-lisp
-(setq ob-imgen-default-model "gpt-image-1")     ; default: "dall-e-3"
+(setq ob-imgen-default-model "gpt-image-1")     ; default: "gpt-image-1"
 (setq ob-imgen-default-size "1024x1024")         ; default: "1024x1024"
+(setq ob-imgen-default-quality "medium")         ; default: "medium"
 (setq ob-imgen-output-directory "~/org/images/") ; default: nil (same dir as org file)
 (setq ob-imgen-display-inline t)                 ; default: t
 #+end_src
 
 * Header arguments
 
-| Arg          | Description                                          | Default       |
-|--------------+------------------------------------------------------+---------------|
-| =:model=     | Model name                                           | =dall-e-3=    |
-| =:size=      | Image dimensions                                     | =1024x1024=   |
-| =:quality=   | Quality (dall-e-3: standard/hd; gpt-image-1: low/medium/high) | model-dependent |
-| =:style=     | vivid or natural (dall-e-3 only)                     | =vivid=       |
-| =:file=      | Output filename                                      | auto-generated |
-| =:output-dir=  | Directory for auto-generated files                  | org file dir  |
-| =:style-guide= | Style guide preamble name (see Style guides section) | none          |
+| Arg             | Description                                          | Default         |
+|-----------------+------------------------------------------------------+-----------------|
+| =:model=        | Model name                                           | =gpt-image-1=  |
+| =:size=         | Image dimensions                                     | =1024x1024=     |
+| =:quality=      | Quality: low, medium, or high                        | =medium=        |
+| =:file=         | Output filename                                      | auto-generated  |
+| =:output-dir=   | Directory for auto-generated files                   | org file dir    |
+| =:style-guide=  | Style guide preamble name (see Style guides section) | none            |
 
 * Style guides
 
@@ -124,10 +124,10 @@ A watercolor painting of a quiet library
 ,#+end_src
 #+end_src
 
-With gpt-image-1 and explicit output:
+With explicit quality and output:
 
 #+begin_src org
-,#+begin_src imgen :model gpt-image-1 :quality high :size 1024x1536 :file hero.png
+,#+begin_src imgen :quality high :size 1024x1536 :file hero.png
 Editorial illustration of a sunrise over ancient ruins
 ,#+end_src
 #+end_src

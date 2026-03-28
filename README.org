@@ -72,7 +72,47 @@ Optional settings:
 | =:quality=   | Quality (dall-e-3: standard/hd; gpt-image-1: low/medium/high) | model-dependent |
 | =:style=     | vivid or natural (dall-e-3 only)                     | =vivid=       |
 | =:file=      | Output filename                                      | auto-generated |
-| =:output-dir= | Directory for auto-generated files                  | org file dir  |
+| =:output-dir=  | Directory for auto-generated files                  | org file dir  |
+| =:style-guide= | Style guide preamble name (see Style guides section) | none          |
+
+* Style guides
+
+You can define reusable style preambles that get prepended to your prompts
+automatically.
+
+1. Set the style guide directory:
+
+#+begin_src emacs-lisp
+(setq ob-imgen-style-guide-directory "~/org/image-styles/")
+#+end_src
+
+2. Create a style guide file, e.g. =~/org/image-styles/editorial.md=:
+
+#+begin_example
+Contemplative editorial illustration, literary rather than fantasy-heavy,
+warm light, reverent and intelligent, muted earth tones
+#+end_example
+
+3. Reference it with =:style-guide=:
+
+#+begin_src org
+,#+begin_src imgen :style-guide editorial :model gpt-image-1
+A human figure formed from earth in a garden with flowing water
+,#+end_src
+#+end_src
+
+The style guide text is prepended to the block body, so the actual prompt
+sent to the API becomes:
+
+#+begin_example
+Contemplative editorial illustration, literary rather than fantasy-heavy,
+warm light, reverent and intelligent, muted earth tones
+
+A human figure formed from earth in a garden with flowing water
+#+end_example
+
+Both =.md= and =.txt= extensions are supported.  If no =:style-guide= header
+is given, behavior is unchanged.
 
 * Examples
 

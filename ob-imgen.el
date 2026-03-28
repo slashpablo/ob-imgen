@@ -21,21 +21,29 @@
 ;;   #+end_src
 ;;
 ;; Header args:
-;;   :model      Model name (default: dall-e-3)
-;;   :size       Image dimensions (default: 1024x1024)
-;;   :quality    Quality setting — model-dependent:
-;;                 dall-e-3:    standard | hd  (default: standard)
-;;                 gpt-image-1: low | medium | high  (default: medium)
-;;   :style      vivid | natural (dall-e-3 only, default: vivid)
-;;   :file       Output filename (default: auto-generated)
-;;   :output-dir Directory for auto-generated files (overrides `ob-imgen-output-directory')
-;;   :results    file (default and only supported value)
+;;   :model       Model name (default: dall-e-3)
+;;   :size        Image dimensions (default: 1024x1024)
+;;   :quality     Quality setting — model-dependent:
+;;                  dall-e-3:    standard | hd  (default: standard)
+;;                  gpt-image-1: low | medium | high  (default: medium)
+;;   :style       vivid | natural (dall-e-3 only, default: vivid)
+;;   :file        Output filename (default: auto-generated)
+;;   :output-dir  Directory for auto-generated files (overrides `ob-imgen-output-directory')
+;;   :style-guide Name of a style guide to prepend to the prompt (see below)
+;;   :results     file (default and only supported value)
 ;;
 ;; Configuration:
 ;;   Set OPENAI_API_KEY environment variable, or customize
 ;;   `ob-imgen-api-key-fn' to fetch it from another source (e.g. auth-source).
 ;;   Set `ob-imgen-output-directory' to save auto-generated images to a
 ;;   dedicated directory instead of alongside the org file.
+;;
+;; Style guides:
+;;   Set `ob-imgen-style-guide-directory' to a directory containing style
+;;   guide files (<name>.md or <name>.txt).  When a source block includes
+;;   :style-guide <name>, the file contents are prepended to the prompt
+;;   separated by a blank line.  This lets you define reusable aesthetic
+;;   preambles without repeating them in every block.
 ;;
 ;; Backends:
 ;;   Currently supports OpenAI (dall-e-2, dall-e-3, gpt-image-1).
@@ -98,12 +106,22 @@ Explicit :file header args are still resolved relative to the org file."
   :type 'boolean
   :group 'ob-imgen)
 
+(defcustom ob-imgen-style-guide-directory nil
+  "Directory containing style guide files for prompt preambles.
+Each style guide is a plain text or markdown file named <style>.md (or .txt)
+in this directory.  When a source block includes :style-guide <name>,
+the contents of the matching file are prepended to the prompt."
+  :type '(choice (const :tag "None" nil)
+                 (directory :tag "Style guide directory"))
+  :group 'ob-imgen)
+
 ;;; Default header args
 
 (defvar org-babel-default-header-args:imgen
-  '((:results    . "file")
-    (:exports    . "results")
-    (:output-dir . nil))
+  '((:results     . "file")
+    (:exports     . "results")
+    (:output-dir  . nil)
+    (:style-guide . nil))
   "Default header arguments for imgen source blocks.")
 
 ;;; API key helpers
@@ -210,11 +228,32 @@ Returns the parsed JSON response alist, or signals an error."
               (insert (base64-decode-string b64))))
         (url-copy-file (alist-get 'url item) outfile t)))))
 
+;;; Style guide support
+
+(defun ob-imgen--read-style-guide (name)
+  "Read the style guide file for NAME and return its trimmed contents."
+  (unless ob-imgen-style-guide-directory
+    (user-error "ob-imgen: :style-guide used but `ob-imgen-style-guide-directory' is not set"))
+  (let* ((dir (expand-file-name ob-imgen-style-guide-directory))
+         (md  (expand-file-name (concat name ".md") dir))
+         (txt (expand-file-name (concat name ".txt") dir))
+         (file (cond ((file-exists-p md)  md)
+                     ((file-exists-p txt) txt)
+                     (t (user-error "ob-imgen: style guide \"%s\" not found in %s" name dir)))))
+    (string-trim (with-temp-buffer
+                   (insert-file-contents file)
+                   (buffer-string)))))
+
 ;;; Main execute function
 
 (defun org-babel-execute:imgen (body params)
   "Generate an image from BODY prompt using PARAMS header args."
-  (let* ((prompt  (string-trim body))
+  (let* ((style-guide (cdr (assq :style-guide params)))
+         (raw-prompt  (string-trim body))
+         (prompt (if (and style-guide (not (string-empty-p style-guide)))
+                     (concat (ob-imgen--read-style-guide style-guide)
+                             "\n\n" raw-prompt)
+                   raw-prompt))
          (outfile (ob-imgen--output-file params)))
     (when (string-empty-p prompt)
       (user-error "ob-imgen: prompt is empty"))

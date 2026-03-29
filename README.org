@@ -18,13 +18,6 @@ A red fox sitting on a snowy mountain at sunset
 
 * Installation
 
-** MELPA (recommended)
-
-#+begin_src emacs-lisp
-(use-package ob-imgen
-  :after org)
-#+end_src
-
 ** Manual
 
 Clone the repo and add it to your load path:
@@ -36,6 +29,15 @@ git clone https://github.com/slashpablo/ob-imgen.git ~/path/to/ob-imgen
 #+begin_src emacs-lisp
 (add-to-list 'load-path "~/path/to/ob-imgen")
 (require 'ob-imgen)
+#+end_src
+
+** MELPA (planned)
+
+Once available on MELPA, you will be able to install with:
+
+#+begin_src emacs-lisp
+(use-package ob-imgen
+  :after org)
 #+end_src
 
 * Configuration
@@ -57,7 +59,7 @@ Or customize the key retrieval function:
 Optional settings:
 
 #+begin_src emacs-lisp
-(setq ob-imgen-default-model "gpt-image-1")     ; default: "gpt-image-1"
+(setq ob-imgen-default-model "gpt-image-1.5")   ; default: "gpt-image-1.5"
 (setq ob-imgen-default-size "1024x1024")         ; default: "1024x1024"
 (setq ob-imgen-default-quality "medium")         ; default: "medium"
 (setq ob-imgen-output-directory "~/org/images/") ; default: nil (same dir as org file)
@@ -68,7 +70,7 @@ Optional settings:
 
 | Arg             | Description                                          | Default         |
 |-----------------+------------------------------------------------------+-----------------|
-| =:model=        | Model name                                           | =gpt-image-1=  |
+| =:model=        | Model name                                           | =gpt-image-1.5= |
 | =:size=         | Image dimensions                                     | =1024x1024=     |
 | =:quality=      | Quality: low, medium, or high                        | =medium=        |
 | =:file=         | Output filename                                      | auto-generated  |

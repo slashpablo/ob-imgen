@@ -3,7 +3,7 @@
 ;; Author: Pablo Munoz Haro <contact@slashpablo.com>
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "27.1") (org "9.0"))
-;; Keywords: org, babel, image, ai, gpt-image
+;; Keywords: multimedia, convenience
 ;; URL: https://github.com/slashpablo/ob-imgen
 
 ;;; Commentary:
@@ -21,7 +21,7 @@
 ;;   #+end_src
 ;;
 ;; Header args:
-;;   :model       Model name (default: gpt-image-1)
+;;   :model       Model name (default: gpt-image-1.5)
 ;;   :size        Image dimensions (default: 1024x1024)
 ;;   :quality     low | medium | high (default: medium)
 ;;   :file        Output filename (default: auto-generated)
